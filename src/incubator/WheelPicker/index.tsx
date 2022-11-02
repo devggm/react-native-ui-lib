@@ -1,7 +1,15 @@
 // TODO: Support style customization
 import {isFunction, isUndefined} from 'lodash';
 import React, {useCallback, useRef, useMemo, useEffect, useState} from 'react';
-import {TextStyle, ViewStyle, NativeSyntheticEvent, NativeScrollEvent, StyleSheet, ListRenderItemInfo, FlatListProps} from 'react-native';
+import {
+  TextStyle,
+  ViewStyle,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
+  StyleSheet,
+  ListRenderItemInfo,
+  FlatListProps
+} from 'react-native';
 import Animated, {useSharedValue, useAnimatedScrollHandler} from 'react-native-reanimated';
 import {FlatList} from 'react-native-gesture-handler';
 import {Colors, Spacings} from 'style';
@@ -133,21 +141,25 @@ const WheelPicker = ({
     !isUndefined(initialValue) && scrollToIndex(currentIndex, true);
   }, [currentIndex]);
 
-  const _onChange = useCallback((value: string | number, index: number) => {
-    if (prevInitialValue.current !== initialValue) {
-      // don't invoke 'onChange' if 'initialValue' changed
-      prevInitialValue.current = initialValue;
-    } else {
-      onChange?.(value, index);
-    }
-  },
-  [initialValue, onChange]);
+  const _onChange = useCallback(
+    (value: string | number, index: number) => {
+      if (prevInitialValue.current !== initialValue) {
+        // don't invoke 'onChange' if 'initialValue' changed
+        prevInitialValue.current = initialValue;
+      } else {
+        onChange?.(value, index);
+      }
+    },
+    [initialValue, onChange]
+  );
 
-  const onValueChange = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const {index, value} = getRowItemAtOffset(event.nativeEvent.contentOffset.y);
-    _onChange(value, index);
-  },
-  [_onChange, getRowItemAtOffset]);
+  const onValueChange = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const {index, value} = getRowItemAtOffset(event.nativeEvent.contentOffset.y);
+      _onChange(value, index);
+    },
+    [_onChange, getRowItemAtOffset]
+  );
 
   const onMomentumScrollEndAndroid = (index: number) => {
     // handle Android bug: ScrollView does not call 'onMomentumScrollEnd' when scrolled programmatically (https://github.com/facebook/react-native/issues/26661)
@@ -178,36 +190,42 @@ const WheelPicker = ({
     scrollToIndex(currentIndex, false);
   }, []);
 
-  const selectItem = useCallback((index: number) => {
-    scrollToIndex(index, true);
-  },
-  [itemHeight]);
+  const selectItem = useCallback(
+    (index: number) => {
+      scrollToIndex(index, true);
+    },
+    [itemHeight]
+  );
 
-  const renderItem = useCallback(({item, index}: ListRenderItemInfo<ItemProps>) => {
-    return (
-      <Item
-        index={index}
-        itemHeight={itemHeight}
-        offset={offset}
-        activeColor={activeTextColor}
-        inactiveColor={inactiveTextColor}
-        style={textStyle}
-        {...item}
-        fakeLabel={label}
-        fakeLabelStyle={labelStyle}
-        fakeLabelProps={labelProps}
-        centerH={!label}
-        onSelect={selectItem}
-        testID={`${testID}.item_${index}`}
-      />
-    );
-  },
-  [itemHeight]);
+  const renderItem = useCallback(
+    ({item, index}: ListRenderItemInfo<ItemProps>) => {
+      return (
+        <Item
+          index={index}
+          itemHeight={itemHeight}
+          offset={offset}
+          activeColor={activeTextColor}
+          inactiveColor={inactiveTextColor}
+          style={textStyle}
+          {...item}
+          fakeLabel={label}
+          fakeLabelStyle={labelStyle}
+          fakeLabelProps={labelProps}
+          centerH={!label}
+          onSelect={selectItem}
+          testID={`${testID}.item_${index}`}
+        />
+      );
+    },
+    [itemHeight]
+  );
 
-  const getItemLayout = useCallback((_data: any, index: number) => {
-    return {length: itemHeight, offset: itemHeight * index, index};
-  },
-  [itemHeight]);
+  const getItemLayout = useCallback(
+    (_data: any, index: number) => {
+      return {length: itemHeight, offset: itemHeight * index, index};
+    },
+    [itemHeight]
+  );
 
   const updateFlatListWidth = useCallback((width: number) => {
     setFlatListWidth(width);
@@ -217,8 +235,8 @@ const WheelPicker = ({
     return align === WheelPickerAlign.RIGHT
       ? {alignSelf: 'flex-end'}
       : align === WheelPickerAlign.LEFT
-        ? {alignSelf: 'flex-start'}
-        : {alignSelf: 'center'};
+      ? {alignSelf: 'flex-start'}
+      : {alignSelf: 'center'};
   }, [align]);
 
   const contentContainerStyle = useMemo(() => {
@@ -247,15 +265,24 @@ const WheelPicker = ({
     );
   }, [flatListWidth, labelContainerStyle, label, labelProps, activeTextColor, labelStyle]);
 
-  const fader = useMemo(() => (position: FaderPosition) => {
-    return <Fader visible position={position} size={60} {...faderProps}/>;
-  },
-  []);
+  const fader = useMemo(
+    () => (position: FaderPosition) => {
+      return <Fader visible position={position} size={60} {...faderProps} />;
+    },
+    []
+  );
 
   const separators = useMemo(() => {
     return (
-      <View absF centerV pointerEvents="none">
-        <View style={[styles.separators, separatorsStyle]}/>
+      <View
+        absF
+        centerV
+        pointerEvents="none"
+        style={{
+          zIndex: -10
+        }}
+      >
+        <View style={[styles.separators, separatorsStyle]} />
       </View>
     );
   }, []);
